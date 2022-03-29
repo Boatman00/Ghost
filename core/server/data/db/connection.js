@@ -10,6 +10,12 @@ function configure(dbConfig) {
     const client = dbConfig.client;
 
     if (client === 'sqlite3') {
+        // TODO: remove this hack
+        // I need to monkey-patch the sqlite3 dialect to use `sqlite3` to make
+        // the jumps smaller as I'm updating `knex`
+        const Dialect = require(`knex/lib/dialects/sqlite3/index.js`);
+        Dialect.prototype._driver = () => require('sqlite3');
+
         // Backwards compatibility with old knex behaviour
         dbConfig.useNullAsDefault = Object.prototype.hasOwnProperty.call(dbConfig, 'useNullAsDefault') ? dbConfig.useNullAsDefault : true;
 
